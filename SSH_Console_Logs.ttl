@@ -1,0 +1,44 @@
+; enter your Target device IP
+hostname = '10.0.11.20'
+
+username = 'root'
+password = 'mypassword'
+
+msg = hostname
+strconcat msg ':22 /ssh /auth=password /user='
+strconcat msg username
+strconcat msg ' /passwd='
+strconcat msg password
+
+connect msg
+
+wait '#'
+
+; get the date and time
+gettime timestr "%Y%m%d-%H%M%S"
+
+; add the user name and the timestamp to the log file name
+sprintf2 filename '%s_console_logs.txt' timestr
+
+; get current working directory
+getdir current_dir
+
+; change the current directory
+changedir current_dir
+
+; open a new log file according to filename
+logopen filename 0 0
+
+sendln 'ifconfig'
+wait '#'
+
+sendln 'sleep 5'
+wait '#'
+
+; Start log rotation
+logrotate 'size' '10M'
+logrotate 'rotate' 1000
+
+; end
+
+
